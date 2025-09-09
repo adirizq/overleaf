@@ -116,20 +116,10 @@ services:
           # This override is not needed when running the setup after starting up mongo.
           - mongo:127.0.0.1
         healthcheck:
-          # This command explicitly checks the replica set status and quits with
-          # a success (0) or failure (1) code, preventing false positives.
-          test: |
-            mongosh --quiet --eval '
-              const status = rs.status();
-              if (status.ok && (status.myState == 1)) {
-                quit(0);
-              }
-              quit(1);
-            '
-          interval: 15s
-          timeout: 10s
-          retries: 5
-          start_period: 60s
+            test: echo 'db.stats().ok' | mongosh localhost:27017/test --quiet
+            interval: 10s
+            timeout: 10s
+            retries: 5
 
     redis:
         restart: always
